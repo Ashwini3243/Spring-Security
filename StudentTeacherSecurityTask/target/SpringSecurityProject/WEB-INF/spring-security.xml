@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+         xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/security
+         https://www.springframework.org/schema/security/spring-security.xsd">
+    <http auto-config="true">
+<intercept-url pattern="/dispStudentTeachersList" access="hasRole('ROLE_A')"/>
+        <intercept-url pattern="/login" access="permitAll()"/>
+        <intercept-url pattern="/studentReg" access="permitAll()"/>
+        <intercept-url pattern="/teacherReg" access="permitAll()"/>
+        <intercept-url pattern="/dispStudentsList" access="hasAnyRole('ROLE_A','ROLE_S')"/>
+        <intercept-url pattern="/updateStudent/{stu_Id}" access="hasAnyRole('ROLE_A','ROLE_S')"/>
+        <intercept-url pattern="/updateStudentdata" access="hasAnyRole('ROLE_A','ROLE_S')"/>
+        <intercept-url pattern="/deleteStudent/{stu_Id}" access="hasAnyRole('ROLE_A','ROLE_S')"/>
+        <intercept-url pattern="/dispTeachersList" access="hasAnyRole('ROLE_A','ROLE_T')"/>
+        <intercept-url pattern="/updateTeacher/{teach_Id}" access="hasAnyRole('ROLE_A','ROLE_T')"/>
+        <intercept-url pattern="/updateTeacherdata" access="hasAnyRole('ROLE_A','ROLE_T')"/>
+        <intercept-url pattern="/deleteTeacher/{teach_Id}" access="hasAnyRole('ROLE_A','ROLE_T')"/>
+        <intercept-url pattern="/logout" access="permitAll()"/>
+
+        <form-login authentication-success-handler-ref="sucessHandler"  />
+
+    </http>
+    <authentication-manager>
+        <authentication-provider>
+
+                <jdbc-user-service data-source-ref="dataSource"
+                                   users-by-username-query="select username, password ,enabled from usersdata where username=?"
+
+                                   authorities-by-username-query="select username ,role from usersdata where username = ?"/>
+                </authentication-provider>
+
+    </authentication-manager>
+    <b:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <b:property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <b:property name="url" value="jdbc:mysql://localhost:3306/securitysample"/>
+        <b:property name="username" value="root"/>
+        <b:property name="password" value="1234"/>
+    </b:bean>
+
+    <!--    accessing databas through jdbc template-->
+    <b:bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <b:property name="dataSource" ref="dataSource"/>
+    </b:bean>
+</b:beans>
